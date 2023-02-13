@@ -9,6 +9,7 @@ import io.micrometer.core.instrument.Gauge;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -46,7 +47,8 @@ public class EngineServiceImpl implements EngineService {
     cntMail = new AtomicInteger();
     cntPolicy = new AtomicInteger();
     signerEndDate = new AtomicLong();
-    signerEndDate.set(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
+    //signerEndDate.set(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
+    signerEndDate.set(LocalDateTime.now().atZone(ZoneId.of("Europe/Moscow")).toInstant().toEpochMilli());
 
     Gauge.builder("server.sign.user.end", fetchSignerEndDate()).
         tag("certuser", "dgorshkov").
