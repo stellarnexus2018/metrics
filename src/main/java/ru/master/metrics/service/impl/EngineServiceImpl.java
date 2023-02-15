@@ -1,6 +1,7 @@
 package ru.master.metrics.service.impl;
 
 import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class EngineServiceImpl implements EngineService {
   private final AtomicInteger cntMail;
   private final AtomicInteger cntPolicy;
   private final AtomicLong signerEndDate;
+  private final Counter register;
 
   public Supplier<Number> fetchSignerEndDate() {
     return ()-> signerEndDate;
@@ -69,6 +71,11 @@ public class EngineServiceImpl implements EngineService {
         tag("doctype", "policy").
         description("количество подписанных полисов на сервере").
         register(meter);
+
+    register = Counter.builder("server.sign.doc.polcounter").
+        tag("doctype", "policy").
+        description("количество подписанных полисов на сервере counter").
+        register(meter);
   }
 
   @Timed("updatingOne")
@@ -87,6 +94,8 @@ public class EngineServiceImpl implements EngineService {
     rand = getRandom(min, max);
     cntPolicy.set(rand);
     log.info("cntPolicy: установлен = {}", rand);
+
+    register.increment(5);
 
     return rand;
   }
